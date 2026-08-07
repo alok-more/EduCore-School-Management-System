@@ -3,12 +3,18 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export interface AuthSession {
+  schoolCode: string;
+  schoolName: any;
   userId: string;
   email: string;
   role: 'SUPER_ADMIN' | 'SCHOOL_ADMIN';
   schoolId: string | null;
   firstName: string;
   lastName: string;
+  isActive: boolean;
+  createdAt: string | null;
+  lastLogin: string | null;
+  mobile: string | null;
 }
 
 interface AuthContextValue {
