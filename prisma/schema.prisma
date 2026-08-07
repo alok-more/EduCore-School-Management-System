@@ -1,0 +1,152 @@
+// EduCore — Prisma schema for PostgreSQL
+// School Management System with RBAC, audit fields, and soft delete.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Roles
+// ---------------------------------------------------------------------------
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  role_name   String   @unique @db.VarChar(50)
+  description String?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @default(now()) @map("updated_at")
+
+  profiles Profile[]
+
+  @@map("roles")
+}
+
+// ---------------------------------------------------------------------------
+// Schools
+// ---------------------------------------------------------------------------
+model School {
+  id                  String   @id @default(uuid()) @db.Uuid
+  school_code         String   @unique @db.VarChar(20)
+  school_name         String   @db.VarChar(150)
+  registration_number String?  @db.VarChar(50)
+  affiliation_board   String?  @db.VarChar(80)
+  school_type         String?  @db.VarChar(80)
+  principal_name      String?  @db.VarChar(120)
+  establishment_date  DateTime? @db.Date
+  registration_date   DateTime? @db.Date
+  email               String?  @db.VarChar(150)
+  phone               String?  @db.VarChar(30)
+  address             String?  @db.VarChar(250)
+  city                String?  @db.VarChar(80)
+  state               String?  @db.VarChar(80)
+  country             String?  @db.VarChar(80)
+  zipcode             String?  @db.VarChar(20)
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now()) @map("created_at")
+  created_by          String?  @db.Uuid
+  updated_at          DateTime @default(now()) @map("updated_at")
+  updated_by          String?  @db.Uuid
+
+  profiles Profile[]
+  staff    Staff[]
+  students Student[]
+
+  @@map("schools")
+}
+
+// ---------------------------------------------------------------------------
+// Users (Profiles) — linked to auth, scoped to school + role
+// ---------------------------------------------------------------------------
+model Profile {
+  id              String   @id @db.Uuid
+  school_id        String?  @db.Uuid
+  role_id         String   @db.Uuid
+  first_name      String   @db.VarChar(80)
+  last_name       String   @db.VarChar(80)
+  email           String   @unique @db.VarChar(150)
+  mobile          String?  @db.VarChar(30)
+  password_hash   String   @db.VarChar(255)
+  last_login      DateTime?
+  login_attempts  Int      @default(0)
+  account_locked  Boolean  @default(false)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now()) @map("created_at")
+  created_by      String?  @db.Uuid
+  updated_at      DateTime @default(now()) @map("updated_at")
+  updated_by      String?  @db.Uuid
+
+  school School? @relation(fields: [school_id], references: [id], onDelete: SetNull)
+  role   Role    @relation(fields: [role_id], references: [id], onDelete: Restrict)
+
+  @@index([school_id])
+  @@index([role_id])
+  @@map("profiles")
+}
+
+// ---------------------------------------------------------------------------
+// Staff
+// ---------------------------------------------------------------------------
+model Staff {
+  id            String   @id @default(uuid()) @db.Uuid
+  school_id     String   @db.Uuid
+  employee_code String   @db.VarChar(30)
+  first_name    String   @db.VarChar(80)
+  last_name     String   @db.VarChar(80)
+  gender        String?  @db.VarChar(10)
+  date_of_birth DateTime? @db.Date
+  mobile        String?  @db.VarChar(30)
+  email         String?  @db.VarChar(150)
+  designation   String?  @db.VarChar(80)
+  department    String?  @db.VarChar(80)
+  joining_date  DateTime? @db.Date
+  qualification String?  @db.VarChar(120)
+  salary        Decimal? @db.Decimal(12, 2)
+  address       String?  @db.VarChar(250)
+  city           String?  @db.VarChar(80)
+  state          String?  @db.VarChar(80)
+  is_active      Boolean  @default(true)
+  created_at     DateTime @default(now()) @map("created_at")
+  created_by     String?  @db.Uuid
+  updated_at     DateTime @default(now()) @map("updated_at")
+  updated_by     String?  @db.Uuid
+
+  school School @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@unique([school_id, employee_code])
+  @@index([school_id])
+  @@map("staff")
+}
+
+// ---------------------------------------------------------------------------
+// Students
+// ---------------------------------------------------------------------------
+model Student {
+  id            String   @id @default(uuid()) @db.Uuid
+  school_id     String   @db.Uuid
+  roll_no       String   @db.VarChar(30)
+  first_name    String   @db.VarChar(80)
+  middle_name   String?  @db.VarChar(80)
+  last_name     String   @db.VarChar(80)
+  gender        String?  @db.VarChar(10)
+  date_of_birth DateTime? @db.Date
+  blood_group   String?  @db.VarChar(10)
+  admission_date DateTime? @db.Date
+  status        String   @default("Active") @db.VarChar(20)
+  photo         String?  @db.VarChar(500)
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now()) @map("created_at")
+  created_by    String?  @db.Uuid
+  updated_at    DateTime @default(now()) @map("updated_at")
+  updated_by    String?  @db.Uuid
+
+  school School @relation(fields: [school_id], references: [id], onDelete: Cascade)
+
+  @@unique([school_id, roll_no])
+  @@index([school_id])
+  @@map("students")
+}
