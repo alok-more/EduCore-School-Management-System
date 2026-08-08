@@ -111,11 +111,11 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="rounded-lg border bg-muted/40 p-4 text-xs text-muted-foreground">
+          {/* <div className="rounded-lg border bg-muted/40 p-4 text-xs text-muted-foreground">
             <p className="mb-1.5 font-medium text-foreground">Demo credentials</p>
             <p>Super Admin — <span className="font-mono">superadmin@educore.test</span> / <span className="font-mono">Educ0re!Super</span></p>
             <p>School Admin — <span className="font-mono">admin@maplewood.test</span> / <span className="font-mono">Educ0re!Admin</span></p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

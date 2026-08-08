@@ -35,3 +35,15 @@ export async function findProfilesBySchool(schoolId: string) {
     include: { role: true },
   });
 }
+
+export async function setProfileActive(id: string, isActive: boolean, updatedBy: string) {
+  return prisma.profile.update({
+    where: { id },
+    data: { is_active: isActive, updated_by: updatedBy },
+    include: { role: true, school: { select: { id: true, school_name: true, school_code: true } } },
+  });
+}
+
+export async function findProfileByIdSimple(id: string) {
+  return prisma.profile.findUnique({ where: { id } });
+}

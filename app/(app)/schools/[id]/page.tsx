@@ -5,12 +5,13 @@ import { useApi, apiPost } from '@/hooks/use-api';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { PageHeader } from '@/components/layout/page-header';
 import { StatusBadge } from '@/components/layout/status-badge';
+import { ConfirmDialog } from '@/components/layout/confirm-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UserPlus, Loader2, Mail, Phone, MapPin, CalendarDays, Hash } from 'lucide-react';
+import { UserPlus, Loader2, Mail, Phone, MapPin, CalendarDays, Hash, Power, PowerOff } from 'lucide-react';
 import { toast } from 'sonner';
 import type { SchoolRow, ProfileRow } from '@/lib/types/database';
 
@@ -70,6 +71,8 @@ function SchoolAdminsSection({
 }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<{ admin: ProfileRow; activate: boolean } | null>(null);
   const [form, setForm] = useState({ first_name: '', last_name: '', email: '', mobile: '', password: '' });
 
   const submit = async (e: React.FormEvent) => {
@@ -82,6 +85,25 @@ function SchoolAdminsSection({
     setForm({ first_name: '', last_name: '', email: '', mobile: '', password: '' });
     setOpen(false);
     refetch();
+  };
+
+  const handleToggle = async () => {
+    if (!confirm) return;
+    setToggling(confirm.admin.id);
+    const res = await fetch(`/api/users/${confirm.admin.id}?activate=${confirm.activate}`, {
+      method: 'PATCH',
+      credentials: 'same-origin',
+    });
+    const json = await res.json();
+    setToggling(null);
+    if (!res.ok) {
+      toast.error(json.error ?? 'Failed to update access');
+      setConfirm(null);
+      return;
+    }
+    toast.success(confirm.activate ? 'Access restored' : 'Access revoked');
+    refetch();
+    setConfirm(null);
   };
 
   return (
@@ -139,11 +161,41 @@ function SchoolAdminsSection({
                   <p className="truncate text-xs text-muted-foreground">{a.email}</p>
                 </div>
                 <StatusBadge active={a.is_active} />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  disabled={toggling === a.id}
+                  onClick={() => setConfirm({ admin: a, activate: !a.is_active })}
+                  aria-label={a.is_active ? 'Revoke access' : 'Restore access'}
+                >
+                  {toggling === a.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : a.is_active ? (
+                    <PowerOff className="h-4 w-4 text-destructive" />
+                  ) : (
+                    <Power className="h-4 w-4 text-success" />
+                  )}
+                </Button>
               </div>
             ))}
           </div>
         )}
       </CardContent>
+
+      <ConfirmDialog
+        open={!!confirm}
+        onOpenChange={(o) => !o && setConfirm(null)}
+        title={confirm?.activate ? 'Restore access?' : 'Revoke access?'}
+        description={
+          confirm
+            ? `This will ${confirm.activate ? 'restore access for' : 'revoke access from'} ${confirm.admin.first_name} ${confirm.admin.last_name}. ${confirm.activate ? '' : 'They will no longer be able to log in.'}`
+            : ''
+        }
+        confirmLabel={confirm?.activate ? 'Restore' : 'Revoke'}
+        destructive={!confirm?.activate}
+        onConfirm={handleToggle}
+      />
     </Card>
   );
 }
