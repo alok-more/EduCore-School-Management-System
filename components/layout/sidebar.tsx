@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { GraduationCap, LayoutDashboard, Building2, Users, UserCog, UserCircle, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/components/providers/auth-provider';
+import Image from "next/image";
 
 interface NavItem {
   label: string;
@@ -32,14 +33,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <aside className="flex h-full w-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sidebar-accent text-sidebar-accent-foreground">
-          <GraduationCap className="h-5 w-5" />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-base font-semibold leading-tight">EduCore</span>
-          <span className="text-[11px] text-sidebar-muted-foreground">
-            School Management
-          </span>
+        <div className="flex items-center">
+          <Image
+            src="/EduCore_Logo_Main_Dark.png"
+            alt="EduCore"
+            width={200}
+            height={60}
+            className="h-16 w-auto object-contain"
+          />
         </div>
       </div>
 

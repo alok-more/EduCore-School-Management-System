@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import Image from "next/image";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -34,11 +35,14 @@ export default function LoginPage() {
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Brand panel */}
       <div className="relative hidden flex-col justify-between bg-sidebar p-10 text-sidebar-foreground lg:flex">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sidebar-accent text-sidebar-accent-foreground">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <span className="text-lg font-semibold">EduCore</span>
+        <div className="flex items-center">
+          <Image
+            src="/EduCore_Logo_Main_Dark.png"
+            alt="EduCore"
+            width={280}
+            height={70}
+            className="h-20 w-auto object-contain"
+          />
         </div>
         <div className="space-y-5">
           <h2 className="max-w-sm text-3xl font-semibold leading-tight text-balance">
