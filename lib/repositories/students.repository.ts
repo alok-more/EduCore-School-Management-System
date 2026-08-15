@@ -21,7 +21,6 @@ export async function findStudents(q: StudentQuery): Promise<PaginatedResult<any
   } = q;
 
   const where: Prisma.StudentWhereInput = { school_id: schoolId };
-
   if (search) {
     where.OR = [
       { first_name: { contains: search, mode: 'insensitive' } },
@@ -29,12 +28,8 @@ export async function findStudents(q: StudentQuery): Promise<PaginatedResult<any
       { roll_no: { contains: search, mode: 'insensitive' } },
     ];
   }
-
   if (status) where.status = status;
-
-  if (typeof isActive === 'boolean') {
-    where.is_active = isActive;
-  }
+  if (typeof isActive === 'boolean') where.is_active = isActive;
 
   const [data, total] = await Promise.all([
     prisma.student.findMany({
@@ -46,22 +41,7 @@ export async function findStudents(q: StudentQuery): Promise<PaginatedResult<any
     prisma.student.count({ where }),
   ]);
 
-  // ADD DEBUG HERE
-  console.log(
-    "Students from DB:",
-    data.map((s) => ({
-      id: s.id,
-      is_active: s.is_active,
-    }))
-  );
-
-  return {
-    data,
-    total,
-    page,
-    pageSize,
-    totalPages: Math.max(1, Math.ceil(total / pageSize)),
-  };
+  return { data, total, page, pageSize, totalPages: Math.max(1, Math.ceil(total / pageSize)) };
 }
 
 export async function findStudentById(id: string) {
@@ -76,29 +56,11 @@ export async function updateStudent(id: string, input: Prisma.StudentUpdateInput
   return prisma.student.update({ where: { id }, data: input });
 }
 
-export async function setStudentActive(
-  id: string,
-  isActive: boolean,
-  updatedBy: string | null
-) {
-  console.log("Updating student:", { id, isActive });
-
-  const student = await prisma.student.update({
+export async function setStudentActive(id: string, isActive: boolean, updatedBy: string | null) {
+  return prisma.student.update({
     where: { id },
-    data: {
-      is_active: isActive,
-      updated_by: updatedBy,
-    },
+    data: { is_active: isActive, updated_by: updatedBy },
   });
-
-  const verify = await prisma.student.findUnique({
-    where: { id },
-  });
-
-  console.log("Updated student:", student.is_active);
-  console.log("Verified from DB:", verify?.is_active);
-
-  return student;
 }
 
 export async function countStudents(schoolId: string) {

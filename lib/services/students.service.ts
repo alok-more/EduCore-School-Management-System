@@ -27,61 +27,36 @@ export async function getStudent(session: AuthSession, id: string) {
   return student;
 }
 
-export async function createStudent(
-  session: AuthSession,
-  schoolId: string,
-  input: Record<string, any>
-) {
-  ensureSchoolAccess(session, schoolId);
-
-  return insertStudent({
-    ...input,
-
-    date_of_birth: input.date_of_birth
-      ? new Date(input.date_of_birth)
-      : null,
-
-    admission_date: input.admission_date
-      ? new Date(input.admission_date)
-      : null,
-
-    school: {
-      connect: {
-        id: schoolId,
-      },
-    },
-
-    created_by: session.userId,
-    updated_by: session.userId,
-    roll_no: '',
-    first_name: '',
-    last_name: ''
-  });
+function toISODate(v: unknown): string | null {
+  if (!v || typeof v !== 'string') return null;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? null : d.toISOString();
 }
 
-export async function editStudent(
-  session: AuthSession,
-  id: string,
-  input: Record<string, any>
-) {
-  const existing = await findStudentById(id);
-  if (!existing) throw notFound("Student not found");
-
-  ensureSchoolAccess(session, existing.school_id);
-
-  return updateStudent(id, {
-    ...input,
-
-    date_of_birth: input.date_of_birth
-      ? new Date(input.date_of_birth)
-      : null,
-
-    admission_date: input.admission_date
-      ? new Date(input.admission_date)
-      : null,
-
+export async function createStudent(session: AuthSession, schoolId: string, input: Record<string, unknown>) {
+  ensureSchoolAccess(session, schoolId);
+  const { date_of_birth, admission_date, ...rest } = input;
+  return insertStudent({
+    ...rest,
+    date_of_birth: toISODate(date_of_birth),
+    admission_date: toISODate(admission_date),
+    school: { connect: { id: schoolId } },
+    created_by: session.userId,
     updated_by: session.userId,
-  });
+  } as any);
+}
+
+export async function editStudent(session: AuthSession, id: string, input: Record<string, unknown>) {
+  const existing = await findStudentById(id);
+  if (!existing) throw notFound('Student not found');
+  ensureSchoolAccess(session, existing.school_id);
+  const { date_of_birth, admission_date, ...rest } = input;
+  return updateStudent(id, {
+    ...rest,
+    date_of_birth: toISODate(date_of_birth),
+    admission_date: toISODate(admission_date),
+    updated_by: session.userId,
+  } as any);
 }
 
 export async function toggleStudentActive(session: AuthSession, id: string, isActive: boolean) {

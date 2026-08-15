@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { StaffRow } from '@/lib/types/database';
 
 export default function EditStaffPage({ params }: { params: { id: string } }) {
-  const { data: staff, loading } = useApi<StaffRow>(`/api/staff/${params.id}`);
+  const { data: staff, loading } = useApi<StaffRow>(params?.id ? `/api/staff/${params.id}` : null);
 
   return (
     <div className="space-y-6">

@@ -5,8 +5,11 @@ import { editStaff, getStaff, toggleStaffActive } from '@/lib/services/staff.ser
 import { staffSchema } from '@/lib/validators';
 import { apiError, apiOk, badRequest, forbidden, notFound, serverError, prismaError } from '@/lib/api';
 
+const UUID_RE = /^[0-9a-fA-F-]{36}$/;
+
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!params?.id || !UUID_RE.test(params.id)) return badRequest('Invalid staff ID');
     const session = await requireSession();
     const staff = await getStaff(session, params.id);
     return apiOk(staff);
@@ -21,6 +24,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!params?.id || !UUID_RE.test(params.id)) return badRequest('Invalid staff ID');
     const session = await requireSession();
     let body: unknown;
     try { body = await req.json(); } catch { return badRequest('Invalid JSON body'); }
@@ -39,6 +43,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!params?.id || !UUID_RE.test(params.id)) return badRequest('Invalid staff ID');
     const session = await requireSession();
     const isActive = new URL(req.url).searchParams.get('activate') === 'true';
     const staff = await toggleStaffActive(session, params.id, isActive);

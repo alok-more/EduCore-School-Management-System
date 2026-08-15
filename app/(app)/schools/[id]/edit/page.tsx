@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { SchoolRow } from '@/lib/types/database';
 
 export default function EditSchoolPage({ params }: { params: { id: string } }) {
-  const { data: school, loading } = useApi<SchoolRow>(`/api/schools/${params.id}`);
+  const { data: school, loading } = useApi<SchoolRow>(params?.id ? `/api/schools/${params.id}` : null);
 
   return (
     <div className="space-y-6">

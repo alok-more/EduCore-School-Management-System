@@ -5,8 +5,11 @@ import { editSchool, getSchool, toggleSchoolActive } from '@/lib/services/school
 import { schoolSchema } from '@/lib/validators';
 import { apiError, apiOk, badRequest, forbidden, notFound, serverError, prismaError } from '@/lib/api';
 
+const UUID_RE = /^[0-9a-fA-F-]{36}$/;
+
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!params?.id || !UUID_RE.test(params.id)) return badRequest('Invalid school ID');
     const session = await requireSuperAdmin();
     const school = await getSchool(session, params.id);
     return apiOk(school);
@@ -21,6 +24,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!params?.id || !UUID_RE.test(params.id)) return badRequest('Invalid school ID');
     const session = await requireSuperAdmin();
     let body: unknown;
     try { body = await req.json(); } catch { return badRequest('Invalid JSON body'); }
@@ -39,6 +43,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    if (!params?.id || !UUID_RE.test(params.id)) return badRequest('Invalid school ID');
     const session = await requireSuperAdmin();
     const url = new URL(req.url);
     const isActive = url.searchParams.get('activate') === 'true';

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { GraduationCap, Plus, Pencil, Power, PowerOff } from 'lucide-react';
+import { GraduationCap, Plus, Pencil, Eye, Power, PowerOff } from 'lucide-react';
 import { useApi, apiDelete } from '@/hooks/use-api';
 import { useAuth } from '@/components/providers/auth-provider';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
@@ -87,11 +87,10 @@ export default function StudentsPage() {
       render: (s) => <span className="text-sm text-muted-foreground">{fmtDate(s.admission_date)}</span>,
     },
     {
-      key: 'is_active',
+      key: 'status',
       header: 'Status',
-      render: (s) => (
-        <StudentStatusBadge active={s.is_active} />
-      ),
+      sortable: true,
+      render: (s) => <StudentStatusBadge active={!!s.is_active} />,
     },
     {
       key: 'actions',
@@ -99,6 +98,11 @@ export default function StudentsPage() {
       className: 'text-right',
       render: (s) => (
         <div className="flex items-center justify-end gap-1">
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/students/${s.id}`} aria-label="View student">
+              <Eye className="h-4 w-4" />
+            </Link>
+          </Button>
           <Button asChild variant="ghost" size="icon">
             <Link href={`/students/${s.id}/edit`} aria-label="Edit student">
               <Pencil className="h-4 w-4" />

@@ -16,8 +16,8 @@ import { toast } from 'sonner';
 import type { SchoolRow, ProfileRow } from '@/lib/types/database';
 
 export default function ViewSchoolPage({ params }: { params: { id: string } }) {
-  const { data: school, loading } = useApi<SchoolRow>(`/api/schools/${params.id}`);
-  const { data: admins, refetch: refetchAdmins } = useApi<ProfileRow[]>(`/api/users?schoolId=${params.id}`);
+  const { data: school, loading } = useApi<SchoolRow>(params?.id ? `/api/schools/${params.id}` : null);
+  const { data: admins, refetch: refetchAdmins } = useApi<ProfileRow[]>(params?.id ? `/api/users?schoolId=${params.id}` : null);
 
   return (
     <div className="space-y-6">

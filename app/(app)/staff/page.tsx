@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { UserCog, Plus, Pencil, Power, PowerOff } from 'lucide-react';
+import { UserCog, Plus, Pencil, Eye, Power, PowerOff } from 'lucide-react';
 import { useApi, apiDelete } from '@/hooks/use-api';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { PageHeader } from '@/components/layout/page-header';
@@ -56,6 +56,9 @@ export default function StaffPage() {
       className: 'text-right',
       render: (s) => (
         <div className="flex items-center justify-end gap-1">
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/staff/${s.id}`} aria-label="View staff"><Eye className="h-4 w-4" /></Link>
+          </Button>
           <Button asChild variant="ghost" size="icon">
             <Link href={`/staff/${s.id}/edit`} aria-label="Edit staff"><Pencil className="h-4 w-4" /></Link>
           </Button>
