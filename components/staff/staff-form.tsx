@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import type { StaffRow } from '@/lib/types/database';
+import { COUNTRIES, STATES_BY_COUNTRY, CITIES_BY_STATE, DEFAULT_COUNTRY, DEFAULT_STATE } from '@/lib/location';
 
 interface StaffFormProps {
   mode: 'create' | 'edit';
@@ -50,13 +51,18 @@ export function StaffForm({ mode, staff }: StaffFormProps) {
           address: staff.address ?? '',
           city: staff.city ?? '',
           state: staff.state ?? '',
+          country: staff.country ?? '',
           is_active: staff.is_active,
         }
-      : { is_active: true, salary: 0 },
+      : { is_active: true, salary: 0, country: DEFAULT_COUNTRY, state: DEFAULT_STATE },
   });
 
   const isActive = watch('is_active');
   const gender = watch('gender');
+  const country = watch('country');
+  const state = watch('state');
+  const states = country ? (STATES_BY_COUNTRY[country] ?? []) : [];
+  const cities = state ? (CITIES_BY_STATE[state] ?? []) : [];
 
   const onSubmit = async (values: StaffInput) => {
     setSaving(true);
@@ -73,6 +79,7 @@ export function StaffForm({ mode, staff }: StaffFormProps) {
       address: values.address || null,
       city: values.city || null,
       state: values.state || null,
+      country: values.country || null,
     };
     if (mode === 'create') {
       const res = await apiPost<StaffRow>('/api/staff', payload);
@@ -98,7 +105,7 @@ export function StaffForm({ mode, staff }: StaffFormProps) {
             <Input {...register('employee_code')} placeholder="EMP001" />
           </Field>
           <Field label="Gender" error={errors.gender?.message}>
-            <Select value={gender} onValueChange={(v) => setValue('gender', v as StaffInput['gender'])}>
+            <Select value={gender ?? ''} onValueChange={(v) => setValue('gender', v as StaffInput['gender'])}>
               <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Male">Male</SelectItem>
@@ -146,8 +153,30 @@ export function StaffForm({ mode, staff }: StaffFormProps) {
           <Field label="Address" error={errors.address?.message} className="sm:col-span-2">
             <Input {...register('address')} />
           </Field>
-          <Field label="City" error={errors.city?.message}><Input {...register('city')} /></Field>
-          <Field label="State" error={errors.state?.message}><Input {...register('state')} /></Field>
+          <Field label="Country" error={errors.country?.message}>
+            <Select value={watch('country') ?? ''} onValueChange={(v) => { setValue('country', v, { shouldDirty: true }); setValue('state', '', { shouldDirty: true }); setValue('city', '', { shouldDirty: true }); }}>
+              <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="State" error={errors.state?.message}>
+            <Select value={state ?? ''} onValueChange={(v) => { setValue('state', v, { shouldDirty: true }); setValue('city', '', { shouldDirty: true }); }}>
+              <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
+              <SelectContent>
+                {(STATES_BY_COUNTRY[country ?? DEFAULT_COUNTRY] ?? []).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="City" error={errors.city?.message}>
+            <Select value={watch('city') ?? ''} onValueChange={(v) => setValue('city', v, { shouldDirty: true })}>
+              <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
+              <SelectContent>
+                {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
         </CardContent>
       </Card>
 

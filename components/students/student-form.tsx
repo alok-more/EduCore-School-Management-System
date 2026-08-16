@@ -21,6 +21,7 @@ import {
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import type { StudentRow } from '@/lib/types/database';
+import { COUNTRIES, STATES_BY_COUNTRY, CITIES_BY_STATE, DEFAULT_COUNTRY, DEFAULT_STATE } from '@/lib/location';
 
 interface StudentFormProps {
   mode: 'create' | 'edit';
@@ -63,6 +64,7 @@ export function StudentForm({ mode, student }: StudentFormProps) {
           address: student.address ?? '',
           city: student.city ?? '',
           state: student.state ?? '',
+          country: student.country ?? '',
           pin_code: student.pin_code ?? '',
           phone: student.phone ?? '',
           father_qualification: student.father_qualification ?? '',
@@ -78,12 +80,16 @@ export function StudentForm({ mode, student }: StudentFormProps) {
           guardian_phone: student.guardian_phone ?? '',
           is_active: student.is_active,
         }
-      : { status: 'Active', is_active: true },
+      : { status: 'Active', is_active: true, country: DEFAULT_COUNTRY, state: DEFAULT_STATE },
   });
 
   const isActive = watch('is_active');
   const gender = watch('gender');
   const status = watch('status');
+  const country = watch('country');
+  const state = watch('state');
+  const states = country ? (STATES_BY_COUNTRY[country] ?? []) : [];
+  const cities = state ? (CITIES_BY_STATE[state] ?? []) : [];
 
   // const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = e.target.files?.[0];
@@ -144,6 +150,7 @@ export function StudentForm({ mode, student }: StudentFormProps) {
       address: values.address || null,
       city: values.city || null,
       state: values.state || null,
+      country: values.country || null,
       pin_code: values.pin_code || null,
       phone: values.phone || null,
       father_qualification: values.father_qualification || null,
@@ -293,11 +300,29 @@ export function StudentForm({ mode, student }: StudentFormProps) {
           <Field label="Address" error={errors.address?.message} className="sm:col-span-2">
             <Input {...register('address')} />
           </Field>
-          <Field label="City" error={errors.city?.message}>
-            <Input {...register('city')} />
+          <Field label="Country" error={errors.country?.message}>
+            <Select value={watch('country') ?? ''} onValueChange={(v) => { setValue('country', v, { shouldDirty: true }); setValue('state', '', { shouldDirty: true }); setValue('city', '', { shouldDirty: true }); }}>
+              <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </Field>
           <Field label="State" error={errors.state?.message}>
-            <Input {...register('state')} />
+            <Select value={state ?? ''} onValueChange={(v) => { setValue('state', v, { shouldDirty: true }); setValue('city', '', { shouldDirty: true }); }}>
+              <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
+              <SelectContent>
+                {(STATES_BY_COUNTRY[country ?? DEFAULT_COUNTRY] ?? []).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="City" error={errors.city?.message}>
+            <Select value={watch('city') ?? ''} onValueChange={(v) => setValue('city', v, { shouldDirty: true })}>
+              <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
+              <SelectContent>
+                {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </Field>
           <Field label="Pin Code" error={errors.pin_code?.message}>
             <Input {...register('pin_code')} />

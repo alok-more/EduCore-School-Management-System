@@ -12,22 +12,24 @@ export type LoginInput = z.infer<typeof loginSchema>;
 // ---------------------------------------------------------------------------
 // Schools
 // ---------------------------------------------------------------------------
+const optStrSchool = (max: number) => z.string().max(max).optional().or(z.literal('')).or(z.null());
+
 export const schoolSchema = z.object({
   school_code: z.string().min(2, 'School code is required').max(20),
   school_name: z.string().min(2, 'School name is required').max(150),
-  registration_number: z.string().max(50).optional().or(z.literal('')),
-  affiliation_board: z.string().max(80).optional().or(z.literal('')),
-  school_type: z.string().max(80).optional().or(z.literal('')),
-  principal_name: z.string().max(120).optional().or(z.literal('')),
-  establishment_date: z.string().optional().or(z.literal('')),
-  registration_date: z.string().optional().or(z.literal('')),
-  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
-  phone: z.string().max(30).optional().or(z.literal('')),
-  address: z.string().max(250).optional().or(z.literal('')),
-  city: z.string().max(80).optional().or(z.literal('')),
-  state: z.string().max(80).optional().or(z.literal('')),
-  country: z.string().max(80).optional().or(z.literal('')),
-  zipcode: z.string().max(20).optional().or(z.literal('')),
+  registration_number: optStrSchool(50),
+  affiliation_board: optStrSchool(80),
+  school_type: optStrSchool(80),
+  principal_name: optStrSchool(120),
+  establishment_date: z.string().optional().or(z.literal('')).or(z.null()),
+  registration_date: z.string().optional().or(z.literal('')).or(z.null()),
+  email: z.string().email('Enter a valid email').optional().or(z.literal('')).or(z.null()),
+  phone: optStrSchool(30),
+  address: optStrSchool(250),
+  city: optStrSchool(80),
+  state: optStrSchool(80),
+  country: optStrSchool(80),
+  zipcode: optStrSchool(20),
   is_active: z.boolean().default(true),
 });
 export type SchoolInput = z.infer<typeof schoolSchema>;
@@ -48,22 +50,25 @@ export type CreateUserInput = z.infer<typeof createUserSchema>;
 // ---------------------------------------------------------------------------
 // Staff
 // ---------------------------------------------------------------------------
+const optStrStaff = (max: number) => z.string().max(max).optional().or(z.literal('')).or(z.null());
+
 export const staffSchema = z.object({
   employee_code: z.string().min(1, 'Employee code is required').max(30),
   first_name: z.string().min(1, 'First name is required').max(80),
   last_name: z.string().min(1, 'Last name is required').max(80),
-  gender: z.enum(['Male', 'Female', 'Other']).optional().or(z.literal('')),
-  date_of_birth: z.string().optional().or(z.literal('')),
-  mobile: z.string().max(30).optional().or(z.literal('')),
-  email: z.string().email('Enter a valid email').optional().or(z.literal('')),
-  designation: z.string().max(80).optional().or(z.literal('')),
-  department: z.string().max(80).optional().or(z.literal('')),
-  joining_date: z.string().optional().or(z.literal('')),
-  qualification: z.string().max(120).optional().or(z.literal('')),
-  salary: z.coerce.number().min(0).optional().or(z.literal(0)),
-  address: z.string().max(250).optional().or(z.literal('')),
-  city: z.string().max(80).optional().or(z.literal('')),
-  state: z.string().max(80).optional().or(z.literal('')),
+  gender: z.enum(['Male', 'Female', 'Other']).optional().or(z.literal('')).or(z.null()),
+  date_of_birth: z.string().optional().or(z.literal('')).or(z.null()),
+  mobile: optStrStaff(30),
+  email: z.string().email('Enter a valid email').optional().or(z.literal('')).or(z.null()),
+  designation: optStrStaff(80),
+  department: optStrStaff(80),
+  joining_date: z.string().optional().or(z.literal('')).or(z.null()),
+  qualification: optStrStaff(120),
+  salary: z.coerce.number().min(0).optional().or(z.literal(0)).or(z.null()),
+  address: optStrStaff(250),
+  city: optStrStaff(80),
+  state: optStrStaff(80),
+  country: optStrStaff(80),
   is_active: z.boolean().default(true),
 });
 export type StaffInput = z.infer<typeof staffSchema>;
@@ -100,6 +105,7 @@ export const studentSchema = z.object({
   address: optStr(250),
   city: optStr(80),
   state: optStr(80),
+  country: optStr(80),
   pin_code: optStr(20),
   phone: optStr(30),
   father_qualification: optStr(120),

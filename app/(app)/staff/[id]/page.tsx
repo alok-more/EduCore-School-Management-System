@@ -64,6 +64,7 @@ export default function ViewStaffPage({ params }: { params: { id: string } }) {
             <Detail label="Address" value={staff.address} className="sm:col-span-2" />
             <Detail label="City" value={staff.city} />
             <Detail label="State" value={staff.state} />
+            <Detail label="Country" value={staff.country} />
           </CardContent>
         </Card>
       </div>

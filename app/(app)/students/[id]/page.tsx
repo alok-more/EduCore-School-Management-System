@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import type { StudentRow } from '@/lib/types/database';
 
 export default function ViewStudentPage({ params }: { params: { id: string } }) {
-  const { data: student, loading } = useApi<StudentRow>(`/api/students/${params.id}`);
+  const { data: student, loading } = useApi<StudentRow>(params?.id ? `/api/students/${params.id}` : null);
 
   if (loading || !student) {
     return (
@@ -33,7 +33,7 @@ export default function ViewStudentPage({ params }: { params: { id: string } }) 
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Students', href: '/students' }, { label: fullName }]} />
       <PageHeader title={fullName} description={`Roll No ${student.roll_no} · ${student.standard_sought ?? '—'}`}>
-        <StudentStatusBadge active={student.is_active} />
+        <StudentStatusBadge active={!!student.is_active} />
         <Button asChild variant="outline" size="sm">
           <Link href={`/students/${student.id}/edit`}>
             <Pencil className="mr-2 h-4 w-4" /> Edit
@@ -75,6 +75,7 @@ export default function ViewStudentPage({ params }: { params: { id: string } }) 
             <Detail label="Address" value={student.address} className="sm:col-span-2" />
             <Detail label="City" value={student.city} />
             <Detail label="State" value={student.state} />
+            <Detail label="Country" value={student.country} />
             <Detail label="Pin Code" value={student.pin_code} />
             <Detail label="Phone" value={student.phone} />
           </CardContent>

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/auth-provider';
 import { GraduationCap } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   const { session, loading } = useAuth();
@@ -17,9 +18,13 @@ export default function Home() {
   return (
     <div className="flex h-screen items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-          <GraduationCap className="h-6 w-6" />
-        </div>
+          <Image
+            src="/EduCore_Logo_Symbol.png"
+            alt="EduCore"
+            width={64}
+            height={64}
+            className="h-16 w-16 object-contain"
+          />
         <p className="text-sm text-muted-foreground">Loading EduCore…</p>
       </div>
     </div>

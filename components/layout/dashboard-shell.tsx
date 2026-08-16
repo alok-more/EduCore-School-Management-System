@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/providers/auth-provider';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Navbar } from '@/components/layout/navbar';
-import { GraduationCap } from 'lucide-react';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/providers/auth-provider";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Navbar } from "@/components/layout/navbar";
+import Image from "next/image";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
@@ -13,7 +13,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !session) {
-      router.replace('/login');
+      router.replace("/login");
     }
   }, [loading, session, router]);
 
@@ -21,9 +21,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-            <GraduationCap className="h-6 w-6" />
-          </div>
+          <Image
+            src="/EduCore_Logo_Symbol.png"
+            alt="EduCore"
+            width={64}
+            height={64}
+            className="h-16 w-16 object-contain"
+          />
           <p className="text-sm text-muted-foreground">Loading EduCore…</p>
         </div>
       </div>

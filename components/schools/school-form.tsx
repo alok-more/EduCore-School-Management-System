@@ -10,10 +10,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import type { SchoolRow } from '@/lib/types/database';
+import { COUNTRIES, STATES_BY_COUNTRY, CITIES_BY_STATE, DEFAULT_COUNTRY, DEFAULT_STATE } from '@/lib/location';
 
 interface SchoolFormProps {
   mode: 'create' | 'edit';
@@ -45,10 +53,14 @@ export function SchoolForm({ mode, school }: SchoolFormProps) {
           zipcode: school.zipcode ?? '',
           is_active: school.is_active,
         }
-      : { is_active: true },
+      : { is_active: true, country: DEFAULT_COUNTRY, state: DEFAULT_STATE },
   });
 
   const isActive = watch('is_active');
+  const country = watch('country');
+  const state = watch('state');
+  const states = country ? (STATES_BY_COUNTRY[country] ?? []) : [];
+  const cities = state ? (CITIES_BY_STATE[state] ?? []) : [];
 
   const onSubmit = async (values: SchoolInput) => {
     setSaving(true);
@@ -132,14 +144,29 @@ export function SchoolForm({ mode, school }: SchoolFormProps) {
           <Field label="Address" error={errors.address?.message} className="sm:col-span-2">
             <Input {...register('address')} placeholder="12 Hill Road" />
           </Field>
-          <Field label="City" error={errors.city?.message}>
-            <Input {...register('city')} placeholder="Bengaluru" />
+          <Field label="Country" error={errors.country?.message}>
+            <Select value={country ?? ''} onValueChange={(v) => { setValue('country', v, { shouldDirty: true }); setValue('state', '', { shouldDirty: true }); setValue('city', '', { shouldDirty: true }); }}>
+              <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </Field>
           <Field label="State" error={errors.state?.message}>
-            <Input {...register('state')} placeholder="Karnataka" />
+            <Select value={state ?? ''} onValueChange={(v) => { setValue('state', v, { shouldDirty: true }); setValue('city', '', { shouldDirty: true }); }}>
+              <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
+              <SelectContent>
+                {states.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </Field>
-          <Field label="Country" error={errors.country?.message}>
-            <Input {...register('country')} placeholder="India" />
+          <Field label="City" error={errors.city?.message}>
+            <Select value={watch('city') ?? ''} onValueChange={(v) => setValue('city', v, { shouldDirty: true })}>
+              <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
+              <SelectContent>
+                {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </Field>
           <Field label="Zipcode" error={errors.zipcode?.message}>
             <Input {...register('zipcode')} placeholder="560001" />

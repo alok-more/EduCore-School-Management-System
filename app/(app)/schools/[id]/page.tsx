@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useApi, apiPost } from '@/hooks/use-api';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { PageHeader } from '@/components/layout/page-header';
@@ -11,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UserPlus, Loader2, Mail, Phone, MapPin, CalendarDays, Hash, Power, PowerOff } from 'lucide-react';
+import { UserPlus, Loader2, Mail, Phone, MapPin, CalendarDays, Hash, Power, PowerOff, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import type { SchoolRow, ProfileRow } from '@/lib/types/database';
 
@@ -31,6 +32,11 @@ export default function ViewSchoolPage({ params }: { params: { id: string } }) {
             description={`${school.school_code} · ${school.affiliation_board ?? 'No board'} · ${school.school_type ?? '—'}`}
           >
             <StatusBadge active={school.is_active} />
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/schools/${school.id}/edit`}>
+                <Pencil className="mr-2 h-4 w-4" /> Edit
+              </Link>
+            </Button>
           </PageHeader>
 
           <div className="grid gap-4 lg:grid-cols-2">
