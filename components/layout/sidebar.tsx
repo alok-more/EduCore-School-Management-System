@@ -90,7 +90,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 export function MobileSidebarBack() {
   return (
-    <div className="flex items-center gap-2 px-5 py-3 text-sidebar-muted-foreground md:hidden">
+    <div className="flex items-center gap-2 px-5 py-3 text-white md:hidden">
       <ChevronLeft className="h-4 w-4" />
       <span className="text-xs">Close</span>
     </div>

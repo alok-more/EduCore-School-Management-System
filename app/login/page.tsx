@@ -62,8 +62,14 @@ export default function LoginPage() {
       <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-sm space-y-6">
           <div className="space-y-2 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground lg:hidden">
-              <GraduationCap className="h-6 w-6" />
+            <div className="mx-auto flex h-30 w-30 items-center justify-center rounded-2xl lg:hidden">
+              <Image
+                          src="/EduCore_Logo_Symbol.png"
+                          alt="EduCore"
+                          width={200}
+                          height={60}
+                          className="h-16 w-auto object-contain"
+                        />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
             <p className="text-sm text-muted-foreground">
